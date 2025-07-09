@@ -357,7 +357,7 @@ Dr. Amrita Gogia</h3>
         </div>
     </footer>
 
-    <!-- Chatbot Floating Action Button -->
+    
     <div class="chatbot-container">
         <div id="chatbotButton" class="chatbot-button">
             💬
@@ -383,7 +383,6 @@ Dr. Amrita Gogia</h3>
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
         let app;
         let db;
         let auth;
@@ -416,10 +415,7 @@ Dr. Amrita Gogia</h3>
                     if (user) {
                         userId = user.uid;
                         console.log("Firebase initialized. User ID:", userId);
-                        // Display the userId on the UI for multi-user apps (as per instructions)
-                        // For this app, we'll just log it. If it were a collaborative app,
-                        // we'd add a UI element to show it.
-                    } else {
+} else {
                         console.log("No user signed in.");
                         userId = crypto.randomUUID(); // Fallback for unauthenticated users
                     }
@@ -432,16 +428,16 @@ Dr. Amrita Gogia</h3>
             }
         };
 
-        // Call Firebase initialization
+        
         initializeFirebase();
 
-        // --- Logo Rotation ---
+        
         const clinicLogo = document.getElementById('clinicLogo');
         clinicLogo.addEventListener('click', () => {
             clinicLogo.classList.toggle('rotated');
         });
 
-        // --- Appointment Form Submission ---
+        
         const appointmentForm = document.getElementById('appointmentForm');
         const appointmentMessageDisplay = document.getElementById('appointmentMessageDisplay');
 
@@ -461,7 +457,7 @@ Dr. Amrita Gogia</h3>
             const message = document.getElementById('appointmentMessage').value;
 
             try {
-                // Store private data for the user
+                
                 const appointmentsCollectionRef = collection(db, `artifacts/${__app_id}/users/${userId}/appointments`);
                 await addDoc(appointmentsCollectionRef, {
                     name,
@@ -474,15 +470,13 @@ Dr. Amrita Gogia</h3>
 
                 appointmentMessageDisplay.textContent = 'Appointment booked successfully! We will contact you soon.';
                 appointmentMessageDisplay.style.color = 'green';
-                appointmentForm.reset(); // Clear the form
+                appointmentForm.reset(); 
             } catch (error) {
                 console.error("Error adding document: ", error);
                 appointmentMessageDisplay.textContent = 'Failed to book appointment. Please try again.';
                 appointmentMessageDisplay.style.color = 'red';
             }
         });
-
-        // --- Chatbot Functionality ---
         const chatbotButton = document.getElementById('chatbotButton');
         const chatbotWindow = document.getElementById('chatbotWindow');
         const closeChatbot = document.getElementById('closeChatbot');
@@ -491,10 +485,10 @@ Dr. Amrita Gogia</h3>
         const chatSendButton = document.getElementById('chatSendButton');
         const chatLoading = document.getElementById('chatLoading');
 
-        // Toggle chatbot window visibility
+        
         chatbotButton.addEventListener('click', () => {
             chatbotWindow.classList.toggle('open');
-            chatbotWindow.classList.toggle('hidden'); // Toggle hidden for initial state
+            chatbotWindow.classList.toggle('hidden'); 
         });
 
         closeChatbot.addEventListener('click', () => {
@@ -502,7 +496,7 @@ Dr. Amrita Gogia</h3>
             chatbotWindow.classList.add('hidden');
         });
 
-        // Function to add a message to the chat display
+        
         const addMessage = (text, sender) => {
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('message-bubble');
@@ -513,19 +507,15 @@ Dr. Amrita Gogia</h3>
             }
             messageDiv.textContent = text;
             chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight; 
         };
-
-        // Function to send message to AI
         const sendMessageToAI = async (prompt) => {
             addMessage(prompt, 'user');
-            chatInput.value = ''; // Clear input field
-            chatLoading.classList.remove('hidden'); // Show loading indicator
+            chatInput.value = ''; 
+            chatLoading.classList.remove('hidden'); 
 
             let chatHistory = [];
-            // You might want to store actual chat history for context, but for simplicity
-            // we'll just send the current prompt. For a more advanced chatbot, you'd
-            // build chatHistory from previous messages.
+
             chatHistory.push({ role: "user", parts: [{ text: prompt }] });
 
             const payload = { contents: chatHistory };
@@ -553,11 +543,11 @@ Dr. Amrita Gogia</h3>
                 console.error("Error calling Gemini API:", error);
                 addMessage("I'm having trouble connecting right now. Please try again later.", 'ai');
             } finally {
-                chatLoading.classList.add('hidden'); // Hide loading indicator
+                chatLoading.classList.add('hidden'); 
             }
         };
 
-        // Event listener for send button and Enter key
+        
         chatSendButton.addEventListener('click', () => {
             const message = chatInput.value.trim();
             if (message) {
