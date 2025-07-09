@@ -184,7 +184,7 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
+                                                    <!-- Hero Section -->
     <section id="home" class="hero-section py-20 md:py-32 text-center rounded-b-3xl overflow-hidden">
         <div class="container">
             <h1 class="text-4xl md:text-6xl font-extrabold mb-4 leading-tight">Your Health, Our Priority</h1>
@@ -277,7 +277,8 @@ Dr. Amrita Gogia</h3>
             <h2 class="text-3xl md:text-4xl font-bold mb-8">Book Your Appointment Today</h2>
             <p class="text-lg md:text-xl mb-8 opacity-90">Fill out the form below and we'll get back to you shortly to confirm your visit.</p>
             <form id="appointmentForm" class="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-2xl text-gray-800">
-                <div class="mb-4">
+                
+  <div class="mb-4">
                     <input type="text" id="appointmentName" placeholder="Your Name" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                 </div>
                 <div class="mb-4">
@@ -313,7 +314,7 @@ Dr. Amrita Gogia</h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="p-6 rounded-xl border border-gray-200 bg-blue-50 card">
                     <h3 class="text-xl font-semibold text-gray-800 mb-2">Our Location</h3>
-                    <p class="text-gray-600">123 Health Street, Wellness City, State, 12345</p>
+                    <p class="text-gray-600">123 Health Street, Gwalior City, State, 12345</p>
                 </div>
                 <div class="p-6 rounded-xl border border-gray-200 bg-blue-50 card">
                     <h3 class="text-xl font-semibold text-gray-800 mb-2">Call Us</h3>
@@ -379,17 +380,15 @@ Dr. Amrita Gogia</h3>
     </div>
 
     <script type="module">
-        // Firebase Imports
+                          // Firebase Imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         let app;
         let db;
         let auth;
-        let userId = 'anonymous'; // Default to anonymous
-
-        // Initialize Firebase and Authenticate
-        const initializeFirebase = async () => {
+        let userId = 'anonymous'; 
+   const initializeFirebase = async () => {
             try {
                 // __firebase_config and __app_id are provided by the Canvas environment
                 const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
