@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedCare Clinic - Your Health Partner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family:'Inter', sans-serif;
+            background-color: #f0f4f8; 
+        }
+        .container {
+            max-width: 1200px;
+            margin:0 auto;
+            padding:0 1rem;
+        }
+        .hero-section {
+            background-image:url('https://placehold.co/1200x600/a7d9e7/000000?text=Caring+for+Your+Health'); 
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+        }
+        .card {
+            box-shadow:0 8px 16px rgba(0, 0, 0, 0.1); 
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            border-radius: 1rem; 
+        }
+        .card:hover {
+            transform:translateY(-8px); 
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15); 
+        }
+        .btn-primary {
+            background-color:#2563eb;
+            color: white;
+            padding: 0.85rem 2rem;
+            border-radius: 9999px;
+            transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            background-color: #1d4ed8; 
+            transform: translateY(-2px);
+        }
+        .footer-link {
+            color: #9ca3af;
+        }
+        .footer-link:hover {
+            color: #e5e7eb;
+        }
+
+       
+        .logo-rotate {
+            transition: transform 0.5s ease-in-out;
+        }
+        .logo-rotate.rotated {
+            transform: rotate(180deg);
+        }
+
+        .chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .chatbot-button {
+            background-color: #2563eb;
+            color: white;
+            border-radius: 9999px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+        }
+        .chatbot-button:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-3px);
+        }
+        .chatbot-window {
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            width: 350px;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: translateY(20px);
+            opacity: 0;
+            visibility: hidden;
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out, visibility 0.3s ease-out;
+        }
+        .chatbot-window.open {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+        .chat-messages {
+            flex-grow: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            background-color: #f8fafc;
+        }
+        .message-bubble {
+            max-width: 80%;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            margin-bottom: 0.75rem;
+            word-wrap: break-word;
+        }
+        .message-user {
+            background-color: #2563eb;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 0;
+        }
+        .message-ai {
+            background-color: #e0e7ff;
+            color: #1f2937;
+            margin-right: auto;
+            border-bottom-left-radius: 0;
+        }
+        .chat-input-area {
+            display: flex;
+            padding: 1rem;
+            border-top: 1px solid #e2e8f0;
+        }
+        .chat-input {
+            flex-grow: 1;
+            padding: 0.75rem;
+            border: 1px solid #cbd5e0;
+            border-radius: 0.5rem;
+            margin-right: 0.5rem;
+            outline: none;
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .chat-input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+        .chat-send-button {
+            background-color: #2563eb;
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .chat-send-button:hover {
+            background-color: #1d4ed8;
+        }
+        .loading-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0.5rem;
+            font-style: italic;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+                                                   <!-- Header -->
+    <header class="bg-white shadow-lg py-4 rounded-b-xl">
+        <div class="container flex flex-col md:flex-row justify-between items-center">
+            <a href="#" class="mb-4 md:mb-0">
+                <img id="clinicLogo" src="logo.png" alt="MedCare Clinic Logo" class="h-12 md:h-16 cursor-pointer logo-rotate rounded-full p-1 bg-blue-50">
+            </a>
+            <nav class="flex flex-wrap justify-center md:justify-end space-x-4 md:space-x-8 text-gray-700 font-medium">
+                <a href="#home" class="hover:text-blue-600 hover:bg-blue-50 rounded-md p-2 transition duration-200">Home</a>
+                <a href="#services" class="hover:text-blue-600 hover:bg-blue-50 rounded-md p-2 transition duration-200">Services</a>
+                <a href="#doctors" class="hover:text-blue-600 hover:bg-blue-50 rounded-md p-2 transition duration-200">Doctors</a>
+                <a href="#appointment" class="hover:text-blue-600 hover:bg-blue-50 rounded-md p-2 transition duration-200">Appointment</a>
+                <a href="#contact" class="hover:text-blue-600 hover:bg-blue-50 rounded-md p-2 transition duration-200">Contact Us</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section py-20 md:py-32 text-center rounded-b-3xl overflow-hidden">
+        <div class="container">
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 leading-tight">Your Health, Our Priority</h1>
+            <p class="text-lg md:text-xl mb-8 opacity-90">Providing compassionate and comprehensive healthcare solutions.</p>
+            <a href="#appointment" class="btn-primary inline-block text-lg">Book an Appointment</a>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-16 md:py-24 bg-white">
+        <div class="container">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-12">Our Specialized Services</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Service Card 1 -->
+                <div class="card bg-white p-6 text-center border border-gray-100">
+                    <img src="https://placehold.co/80x80/d1fae5/059669?text=Heart" alt="Cardiology Icon" class="mx-auto mb-4 rounded-full p-2 bg-green-100">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Cardiology</h3>
+                    <p class="text-gray-600">Expert care for heart health, including diagnostics and treatments, ensuring a strong beat for life.</p>
+                </div>
+                <!-- Service Card 2 -->
+                <div class="card bg-white p-6 text-center border border-gray-100">
+                    <img src="https://placehold.co/80x80/e0f2fe/2563eb?text=Ortho" alt="Orthopedics Icon" class="mx-auto mb-4 rounded-full p-2 bg-blue-100">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Orthopedics</h3>
+                    <p class="text-gray-600">Specialized treatment for bone and joint conditions, helping you move freely again.</p>
+                </div>
+                <!-- Service Card 3 -->
+                <div class="card bg-white p-6 text-center border border-gray-100">
+                    <img src="https://placehold.co/80x80/fee2e2/dc2626?text=Pedia" alt="Pediatrics Icon" class="mx-auto mb-4 rounded-full p-2 bg-red-100">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Pediatrics</h3>
+                    <p class="text-gray-600">Comprehensive healthcare for infants, children, and adolescents, nurturing future generations.</p>
+                </div>
+                <!-- Service Card 4 -->
+                <div class="card bg-white p-6 text-center border border-gray-100">
+                    <img src="https://placehold.co/80x80/d1fae5/059669?text=Neuro" alt="Neurology Icon" class="mx-auto mb-4 rounded-full p-2 bg-green-100">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Neurology</h3>
+                    <p class="text-gray-600">Diagnosis and treatment of disorders of the nervous system, for a healthy mind and body.</p>
+                </div>
+                <!-- Service Card 5 -->
+                <div class="card bg-white p-6 text-center border border-gray-100">
+                    <img src="https://placehold.co/80x80/e0f2fe/2563eb?text=Derma" alt="Dermatology Icon" class="mx-auto mb-4 rounded-full p-2 bg-blue-100">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Dermatology</h3>
+                    <p class="text-gray-600">Care for skin, hair, and nail conditions, helping you look and feel your best.</p>
+                </div>
+                <!-- Service Card 6 -->
+                <div class="card bg-white p-6 text-center border border-gray-100">
+                    <img src="https://placehold.co/80x80/fee2e2/dc2626?text=Gastro" alt="Gastroenterology Icon" class="mx-auto mb-4 rounded-full p-2 bg-red-100">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Gastroenterology</h3>
+                    <p class="text-gray-600">Treatment for digestive system disorders, ensuring your gut health is in top shape.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+                                                       <!-- Doctors Section -->
+    <section id="doctors" class="py-16 md:py-24 bg-blue-50">
+        <div class="container">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-12">Meet Our Expert Doctors</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Doctor Card 1 -->
+                <div class="card bg-white p-6 text-center border border-gray-100">
+                    <img src="https://placehold.co/150x150/e0e7ff/4338ca?text=Dr.+Smith" alt="
+Dr. Abhishek Singh Chauha" class="mx-auto mb-4 rounded-full w-32 h-32 object-cover border-4 border-blue-200">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-1">
+Dr. Karandeep Paul</h3>
+                    <p class="text-blue-600 mb-3 font-medium">Cardiologist</p>
+                    <p class="text-gray-600">With over 15 years of experience in cardiac care, Dr. Smith is a trusted name in heart health.</p>
+                </div>
+                <!-- Doctor Card 2 -->
+                <div class="card bg-white p-6 text-center border border-gray-100">
+                    <img src="https://placehold.co/150x150/e0e7ff/4338ca?text=Dr.+Jane" alt="Dr. Jane Doe" class="mx-auto mb-4 rounded-full w-32 h-32 object-cover border-4 border-blue-200">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-1">
+Dr. Amrita Gogia</h3>
+                    <p class="text-blue-600 mb-3 font-medium">Pediatrician</p>
+                    <p class="text-gray-600">Dedicated to the health and well-being of children, providing gentle and effective care.</p>
+                </div>
+                <!-- Doctor Card 3 -->
+                <div class="card bg-white p-6 text-center border border-gray-100">
+                    <img src="https://placehold.co/150x150/e0e7ff/4338ca?text=Dr.+Sharma" alt="Dr. Anil Sharma" class="mx-auto mb-4 rounded-full w-32 h-32 object-cover border-4 border-blue-200">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-1">Dr. Anil Sharma</h3>
+                    <p class="text-blue-600 mb-3 font-medium">Orthopedic Surgeon</p>
+                    <p class="text-gray-600">Specializing in joint replacement and sports injuries, helping patients regain mobility.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+                                                            <!-- Appointment Section -->
+    <section id="appointment" class="py-16 md:py-24 bg-gradient-to-r from-blue-700 to-blue-500 text-white rounded-t-3xl overflow-hidden">
+        <div class="container text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-8">Book Your Appointment Today</h2>
+            <p class="text-lg md:text-xl mb-8 opacity-90">Fill out the form below and we'll get back to you shortly to confirm your visit.</p>
+            <form id="appointmentForm" class="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-2xl text-gray-800">
+                <div class="mb-4">
+                    <input type="text" id="appointmentName" placeholder="Your Name" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div class="mb-4">
+                    <input type="email" id="appointmentEmail" placeholder="Your Email" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div class="mb-4">
+                    <input type="tel" id="appointmentPhone" placeholder="Your Phone Number" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="mb-4">
+                    <select id="appointmentService" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        <option value="">Select Service</option>
+                        <option value="cardiology">Cardiology</option>
+                        <option value="orthopedics">Orthopedics</option>
+                        <option value="pediatrics">Pediatrics</option>
+                        <option value="neurology">Neurology</option>
+                        <option value="dermatology">Dermatology</option>
+                        <option value="gastroenterology">Gastroenterology</option>
+                    </select>
+                </div>
+                <div class="mb-6">
+                    <textarea id="appointmentMessage" placeholder="Your Message (Optional)" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                <button type="submit" class="btn-primary w-full text-lg">Submit Appointment</button>
+                <div id="appointmentMessageDisplay" class="mt-4 text-center text-sm font-medium"></div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 md:py-24 bg-white">
+        <div class="container text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-12">Get in Touch With Us</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="p-6 rounded-xl border border-gray-200 bg-blue-50 card">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Our Location</h3>
+                    <p class="text-gray-600">123 Health Street, Wellness City, State, 12345</p>
+                </div>
+                <div class="p-6 rounded-xl border border-gray-200 bg-blue-50 card">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Call Us</h3>
+                    <p class="text-gray-600">+1 (123) 456-7890</p>
+                </div>
+                <div class="p-6 rounded-xl border border-gray-200 bg-blue-50 card">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Email Us</h3>
+                    <p class="text-gray-600">info@medcareclinic.org</p>
+                </div>
+            </div>
+            <div class="mt-12">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Find Us on Map</h3>
+                <!-- Placeholder for Google Map embed -->
+                <div class="bg-gray-200 rounded-xl overflow-hidden h-64 md:h-96 shadow-lg">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.2847112000003!2d144.9630576153164!3d-37.8141079797516!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad642af0f11fd81%3A0x5045675218d2950!2sFederation%20Square!5e0!3m2!1sen!2sau!4v1678901234567!5m2!1sen!2sau"
+                        width="100%"
+                        height="100%"
+                        style="border:0;"
+                        allowfullscreen=""
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-8 rounded-t-3xl">
+        <div class="container flex flex-col md:flex-row justify-between items-center text-center md:text-left">
+            <div class="mb-4 md:mb-0">
+                <h3 class="text-xl font-bold text-white mb-2">MedCare Clinic</h3>
+                <p class="text-gray-400">&copy; 2025 All rights reserved.</p>
+            </div>
+            <div class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-8">
+                <a href="#home" class="footer-link hover:underline">Privacy Policy</a>
+                <a href="#services" class="footer-link hover:underline">Terms of Service</a>
+                <a href="#doctors" class="footer-link hover:underline">Sitemap</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chatbot Floating Action Button -->
+    <div class="chatbot-container">
+        <div id="chatbotButton" class="chatbot-button">
+            💬
+        </div>
+        <div id="chatbotWindow" class="chatbot-window hidden md:block">
+            <div class="flex justify-between items-center p-4 bg-blue-700 text-white rounded-t-xl">
+                <h3 class="text-lg font-semibold">MedCare Assistant</h3>
+                <button id="closeChatbot" class="text-white text-xl font-bold">&times;</button>
+            </div>
+            <div id="chatMessages" class="chat-messages">
+                <div class="message-bubble message-ai">Hello! I'm your MedCare Assistant. How can I help you today?</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Type your message..." class="chat-input">
+                <button id="chatSendButton" class="chat-send-button">Send</button>
+            </div>
+            <div id="chatLoading" class="loading-indicator hidden">Typing...</div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Firebase Imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        let app;
+        let db;
+        let auth;
+        let userId = 'anonymous'; // Default to anonymous
+
+        // Initialize Firebase and Authenticate
+        const initializeFirebase = async () => {
+            try {
+                // __firebase_config and __app_id are provided by the Canvas environment
+                const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+                if (Object.keys(firebaseConfig).length === 0) {
+                    console.error("Firebase config is not provided. Firestore and Auth will not work.");
+                    return;
+                }
+
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                // Authenticate with custom token if available, otherwise anonymously
+                if (typeof __initial_auth_token !== 'undefined') {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        console.log("Firebase initialized. User ID:", userId);
+                        // Display the userId on the UI for multi-user apps (as per instructions)
+                        // For this app, we'll just log it. If it were a collaborative app,
+                        // we'd add a UI element to show it.
+                    } else {
+                        console.log("No user signed in.");
+                        userId = crypto.randomUUID(); // Fallback for unauthenticated users
+                    }
+                });
+
+            } catch (error) {
+                console.error("Error initializing Firebase or authenticating:", error);
+                document.getElementById('appointmentMessageDisplay').textContent = 'Error initializing app. Please try again later.';
+                document.getElementById('appointmentMessageDisplay').style.color = 'red';
+            }
+        };
+
+        // Call Firebase initialization
+        initializeFirebase();
+
+        // --- Logo Rotation ---
+        const clinicLogo = document.getElementById('clinicLogo');
+        clinicLogo.addEventListener('click', () => {
+            clinicLogo.classList.toggle('rotated');
+        });
+
+        // --- Appointment Form Submission ---
+        const appointmentForm = document.getElementById('appointmentForm');
+        const appointmentMessageDisplay = document.getElementById('appointmentMessageDisplay');
+
+        appointmentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!db || userId === 'anonymous') {
+                appointmentMessageDisplay.textContent = 'App not fully initialized. Please wait or try again.';
+                appointmentMessageDisplay.style.color = 'orange';
+                return;
+            }
+
+            const name = document.getElementById('appointmentName').value;
+            const email = document.getElementById('appointmentEmail').value;
+            const phone = document.getElementById('appointmentPhone').value;
+            const service = document.getElementById('appointmentService').value;
+            const message = document.getElementById('appointmentMessage').value;
+
+            try {
+                // Store private data for the user
+                const appointmentsCollectionRef = collection(db, `artifacts/${__app_id}/users/${userId}/appointments`);
+                await addDoc(appointmentsCollectionRef, {
+                    name,
+                    email,
+                    phone,
+                    service,
+                    message,
+                    timestamp: new Date()
+                });
+
+                appointmentMessageDisplay.textContent = 'Appointment booked successfully! We will contact you soon.';
+                appointmentMessageDisplay.style.color = 'green';
+                appointmentForm.reset(); // Clear the form
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                appointmentMessageDisplay.textContent = 'Failed to book appointment. Please try again.';
+                appointmentMessageDisplay.style.color = 'red';
+            }
+        });
+
+        // --- Chatbot Functionality ---
+        const chatbotButton = document.getElementById('chatbotButton');
+        const chatbotWindow = document.getElementById('chatbotWindow');
+        const closeChatbot = document.getElementById('closeChatbot');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const chatSendButton = document.getElementById('chatSendButton');
+        const chatLoading = document.getElementById('chatLoading');
+
+        // Toggle chatbot window visibility
+        chatbotButton.addEventListener('click', () => {
+            chatbotWindow.classList.toggle('open');
+            chatbotWindow.classList.toggle('hidden'); // Toggle hidden for initial state
+        });
+
+        closeChatbot.addEventListener('click', () => {
+            chatbotWindow.classList.remove('open');
+            chatbotWindow.classList.add('hidden');
+        });
+
+        // Function to add a message to the chat display
+        const addMessage = (text, sender) => {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message-bubble');
+            if (sender === 'user') {
+                messageDiv.classList.add('message-user');
+            } else {
+                messageDiv.classList.add('message-ai');
+            }
+            messageDiv.textContent = text;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom
+        };
+
+        // Function to send message to AI
+        const sendMessageToAI = async (prompt) => {
+            addMessage(prompt, 'user');
+            chatInput.value = ''; // Clear input field
+            chatLoading.classList.remove('hidden'); // Show loading indicator
+
+            let chatHistory = [];
+            // You might want to store actual chat history for context, but for simplicity
+            // we'll just send the current prompt. For a more advanced chatbot, you'd
+            // build chatHistory from previous messages.
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+            const payload = { contents: chatHistory };
+            const apiKey = ""; // Canvas will automatically provide the API key
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    addMessage(text, 'ai');
+                } else {
+                    addMessage("Sorry, I couldn't get a response. Please try again.", 'ai');
+                    console.error("Unexpected API response structure:", result);
+                }
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                addMessage("I'm having trouble connecting right now. Please try again later.", 'ai');
+            } finally {
+                chatLoading.classList.add('hidden'); // Hide loading indicator
+            }
+        };
+
+        // Event listener for send button and Enter key
+        chatSendButton.addEventListener('click', () => {
+            const message = chatInput.value.trim();
+            if (message) {
+                sendMessageToAI(message);
+            }
+        });
+
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const message = chatInput.value.trim();
+                if (message) {
+                    sendMessageToAI(message);
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
